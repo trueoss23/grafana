@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  loki:
+    image: grafana/loki:2.2.1
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki:/etc/loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    networks:
+      loki_network:
+        ipv4_address: 172.28.0.2
+
+  promtail:
+    image: grafana/promtail:2.2.1
+    volumes:
+      - /var/log:/var/log
+      - ./promtail:/etc/promtail 
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    networks:
+      loki_network:
+        ipv4_address: 172.28.0.3
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      loki_network:
+        ipv4_address: 172.28.0.4
+
+  python_app:
+    image: test
+    volumes:
+      - /var/log:/var/log
+    command: python app.py
+    networks:
+      loki_network:
+        ipv4_address: 172.28.0.5
+
+networks:
+  loki_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+

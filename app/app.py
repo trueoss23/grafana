@@ -1,7 +1,7 @@
 from loguru import logger
 import time
 
-logger.add("app.log", rotation="10 MB", level="INFO")
+logger.add("/var/log/app.log", rotation="10 MB", level="INFO")
 
 
 def app():
